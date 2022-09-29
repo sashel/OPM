@@ -10,8 +10,9 @@ function [D,L] = spm_opm_sim(S)
 %   S.space         - space between sensors(mm)    - Default: 35
 %   S.offset        - scalp to sensor distance(mm) - Default: 6.5
 %   S.nSamples      - number of samples            - Default: 1000
+%   S.nTrials       - number of trials             - Default: 1
 %   S.Dens          - number of density checks     - Default: 40
-%   S.axis          - number of othogonal axes     - Default: 1
+%   S.axis          - number of orthogonal axes    - Default: 1
 % SOURCE LEVEL INFO
 %   S.positions     - positions.tsv file           - Default:
 %   S.sMRI          - Filepath to  MRI file        - Default: uses template
@@ -43,9 +44,10 @@ if ~isfield(S, 'oskull'),      S.oskull = []; end
 if ~isfield(S, 'lead'),        S.lead = 0; end
 if ~isfield(S, 'fs'),          S.fs   = 1000; end
 if ~isfield(S, 'nSamples'),    S.nSamples   = 1000; end
+if ~isfield(S, 'nTrials'),     S.nSamples   = 1; end
 if ~isfield(S, 'nDens'),       S.nDens   = 40; end
 if ~isfield(S, 'offset'),      S.offset  = 6.5; end
-if ~isfield(S, 'data'),        S.data = zeros(1,S.nSamples); end
+if ~isfield(S, 'data'),        S.data = zeros(1,S.nSamples,S.nTrials); end
 if ~isfield(S, 'wholehead'),   S.wholehead = 1; end
 if ~isfield(S, 'fname'),       S.fname = 'sim_opm'; end
 if ~isfield(S, 'space'),       S.space = 35; end
@@ -163,7 +165,7 @@ channels = [];
 channels.name=labs;
 channels.type=repmat({'MEG'},nSensors,1);
 channels.units= repmat({'fT'},nSensors,1);
-D = clone(D,fnamedat(D),[nSensors,S.nSamples,1],1);
+D = clone(D,fnamedat(D),[nSensors,S.nSamples,S.nTrials],1);
 D = chanlabels(D,1:size(D,1),channels.name);
 D = units(D,1:size(D,1),channels.units);
 D = chantype(D,1:size(D,1),channels.type);
